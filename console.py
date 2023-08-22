@@ -344,7 +344,7 @@ class HBNBCommand(cmd.Cmd):
         # retrieve dictionary of current objects
         new_dict = storage.all()[key]
 
-        # iterate through attr names and values
+    # iterate through attr names and values
         for i, att_name in enumerate(args):
             # block only runs on even iterations
             if (i % 2 == 0):
