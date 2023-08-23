@@ -1,20 +1,19 @@
 #!/usr/bin/python3
-""" 1. Compress before sending """
-
-from os import mkdir
 from fabric.api import local
-from datetime import datetime
+from time import strftime
+from datetime import date
 
 
 def do_pack():
-    """Do pack """
-    path = None
+    """ A script that generates archive the contents of web_static folder"""
+
+    filename = strftime("%Y%m%d%H%M%S")
     try:
         local("mkdir -p versions")
-        x = datetime.now()
-        date = x.strftime('%Y%m%d%H%M%S')
-        path = "versions/web_static_{}.tgz".format(date)
-        local("tar -czvf {} web_static/".format(path))
-    except:
-        pass
-    return path
+        local("tar -czvf versions/web_static_{}.tgz web_static/"
+              .format(filename))
+
+        return "versions/web_static_{}.tgz".format(filename)
+
+    except Exception as e:
+        return None
