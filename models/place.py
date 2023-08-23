@@ -15,7 +15,7 @@ from sqlalchemy import Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from os import getenv
-import models
+from .import models
 
 
 association_table = Table("place_amenity", Base.metadata,
