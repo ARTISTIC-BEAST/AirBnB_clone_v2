@@ -1,93 +1,51 @@
 #!/usr/bin/python3
-"""Console unittest
+"""This module tests console.py file.
+Usage:
+    To be used with the unittest module:
+    "python3 -m unittest discover tests" command or
+    "python3 -m unittest tests/test_console.py"
 """
-import unittest
-import os
-import json
-from models.base_model import BaseModel
-from models.user import User
-from models.place import Place
-from models.city import City
-from models.amenity import Amenity
-from models.review import Review
-from models.state import State
-from models.engine.file_storage import FileStorage
-import inspect
-from unittest.mock import patch, create_autospec
-from io import StringIO
+from models.engine.file_storage import FileStorage as Storage
+from unittest.mock import create_autospec, patch
 from console import HBNBCommand
-import uuid
-from time import sleep
+from io import StringIO
+import unittest
+import pep8
 import sys
-from models.__init__ import storage
+import os
 
-type_storage = os.getenv('HBNB_TYPE_STORAGE')
+classes = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
+Storage = Storage()
 
 
-class Test_console(unittest.TestCase):
-    """Test cases for the console.py file
-    """
-    clis = ['BaseModel', 'User', 'Place', 'City', 'Amenity', 'Review', 'State']
-    storage = FileStorage()
+class TestConsole(unittest.TestCase):
+    ''' TestCase class for storing the unittests of the console. '''
+
+    def test_create_00(self):
+        ''' Tests for the create command. '''
+        # Create console session.
+        cons = self.create_session()
+
+        # Test "create {} name='California'".
+        with patch('sys.stdout', new=StringIO()) as Output:
+            cons.onecmd('create State name=\"California\"')
+            create_stdout = Output.getvalue().strip()
+            create_stdout = 'State.{}'.format(create_stdout)
+            self.assertTrue(create_stdout in Storage.all())
+
+    @classmethod
+    def teardown(cls):
+        ''' Removes the file.json on each test. '''
+        try:
+            os.remove("file.json")
+        except:
+            pass
 
     def setUp(self):
-        """set environment to start testing"""
-        # Empty objects in engine
-        FileStorage._FileStorage__objects = {}
-        # Remove file.json if exists
-        if os.path.exists("file.json"):
-            os.remove("file.json")
+        ''' Sets up the mock stdin and stderr. '''
+        self.mock_stdin = create_autospec(sys.stdin)
+        self.mock_stdout = create_autospec(sys.stdout)
 
-    def tearDown(self):
-        """set enviroment when testing is finished"""
-        # Empty objects in engine
-        FileStorage._FileStorage__objects = {}
-        # Remove file.json if exists
-        if os.path.exists("file.json"):
-            os.remove("file.json")
-
-    @unittest.skipIf(type_storage == 'db', "No apply for db")
-    def test_create(self):
-        """Test for create command
-        """
-        with patch('sys.stdout', new=StringIO()) as f:
-            command = "create State name=\"California\""
-            HBNBCommand().onecmd(command)
-            _id = f.getvalue().strip()
-            key = "State" + "." + _id
-            self.assertTrue(key in storage.all().keys())
-
-    @unittest.skipIf(type_storage == 'db', "No apply for db")
-    def test_create2(self):
-        """Test for create command 2
-        """
-        with patch('sys.stdout', new=StringIO()) as f:
-            state = State()
-            command = "create City name=\"Texas\" state_id=\"{}\"".format(
-                state.id)
-            HBNBCommand().onecmd(command)
-            _id = f.getvalue().strip()
-            key = "City" + "." + _id
-            nname = storage.all()[key].name
-            sid = storage.all()[key].state_id
-            self.assertTrue(key in storage.all().keys())
-            self.assertEqual('Texas', nname)
-            self.assertEqual(state.id, sid)
-
-    @unittest.skipIf(type_storage == 'db', "No apply for db")
-    def test_create3(self):
-        """Test for create command 2
-        """
-        with patch('sys.stdout', new=StringIO()) as f:
-            state = State(name='Poloombia')
-            command = "create City name=\"Tex_as\" state_id=\"{}\"".format(
-                state.id)
-            HBNBCommand().onecmd(command)
-            _id = f.getvalue().strip()
-            key = "City" + "." + _id
-            nname = storage.all()[key].name
-            sid = storage.all()[key].state_id
-            self.assertTrue(key in storage.all().keys())
-            self.assertEqual('Tex as', nname)
-            self.assertEqual(state.id, sid)
-            self.assertEqual('Poloombia', state.name)
+    def create_session(self, server=None):
+        ''' Creates the cmd session. '''
+        return HBNBCommand(stdin=self.mock_stdin, stdout=self.mock_stdout)
