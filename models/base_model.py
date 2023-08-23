@@ -3,9 +3,10 @@
 import uuid
 import models
 from datetime import datetime
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, DateTime
-from sqlalchemy.orm import relationship
+from os import getenv
+
 
 Base = declarative_base()
 
@@ -17,21 +18,21 @@ class BaseModel:
     updated_at = Column(DateTime, default=datetime.utcnow(), nullable=False)
 
     def __init__(self, *args, **kwargs):
-        """Instatntiates a new m6todel"""
+        """Instantiates a new model"""
         self.id = str(uuid.uuid4())
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         if kwargs:
-            for key, value in kwargs.items():
-                if key == 'updated_at':
-                    kwargs['updated_at'] = (datetime.
-                                            strptime(kwargs['updated_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f'))
-                if key == 'created_at':
-                    kwargs['created_at'] = (datetime.
-                                            strptime(kwargs['created_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f'))
-            kwargs.pop('__class__', None)
+            if 'updated_at' in kwargs.keys():
+                kwargs['updated_at'] = datetime.\
+                                       strptime(kwargs['updated_at'],
+                                                '%Y-%m-%dT%H:%M:%S.%f')
+            if 'created_at' in kwargs.keys():
+                kwargs['created_at'] = datetime.\
+                                       strptime(kwargs['created_at'],
+                                                '%Y-%m-%dT%H:%M:%S.%f')
+            if '__class__' in kwargs.keys():
+                del kwargs['__class__']
             self.__dict__.update(kwargs)
 
     def __str__(self):
@@ -45,6 +46,7 @@ class BaseModel:
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
+        from models import storage
         self.updated_at = datetime.now()
         models.storage.new(self)
         models.storage.save()
@@ -61,5 +63,5 @@ class BaseModel:
         return dictionary
 
     def delete(self):
-        """Delete instance"""
+        """Delete the current instance from the storage"""
         models.storage.delete(self)
