@@ -1,0 +1,17 @@
+header
+{
+	background:#FF0000;
+	height:70px;
+	width:100%;
+	background: white;
+	border-bottom: 1px;
+	border-bottom-color: #CCCCCC;
+	border-bottom-style: solid;
+	display: flex;
+	justify-content:left;
+	align-items:center;
+	background-image:url('../images/logo.png');
+	background-repeat: no-repeat;
+	background-position-x: 20px;
+	min-height: 70px;
+}
