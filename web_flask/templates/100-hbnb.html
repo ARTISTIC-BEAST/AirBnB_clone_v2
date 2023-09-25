@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="../static/styles/4-common.css">
+		<link rel="stylesheet" href="../static/styles/3-header.css">
+		<link rel="stylesheet" href="../static/styles/3-footer.css">
+		<link rel="shortcut icon" href="../static/images/icon.png">
+		<link rel="stylesheet" href="../static/styles/6-filters.css">
+		<link rel="stylesheet" href="../static/styles/8-places.css">
+		<title>Airbnb clone</title>
+	</head>
+	<body>
+		<header>
+		</header>
+		<div class="container">
+			<section class="filters">
+				<div class="locations">
+				  <h3>States</h3>
+				  <h4>&nbsp;</h4>
+				  <ul class="popover">
+					  {% for key, state in all_states.items() %}
+					  <li><h2>{{ state.name }}:</h2>
+						<ul>
+							{% for city in state.cities %}
+							<li>{{ city.name }}</li>
+							{% endfor %}
+						</ul>
+					  </li>
+					  {% endfor %}
+				  </ul>
+				</div>
+				<div class="amenities">
+				  <h3>Amenities</h3>
+				  <h4>&nbsp;</h4>
+				  <ul class="popover">
+					{% for key, amenity in all_amenities.items() %}
+					<li>{{ amenity.name }}</li>
+					{% endfor %}
+				  </ul>
+				</div>
+				<button>Search</button>
+			  </section>
+			<section class="places">
+				<h1>Places</h1>
+				{% for k, place in all_places.items() %}
+				<article>
+					<div class="title_price">
+						<h2>{{ place.name }}</h2>
+						<div class="price_by_night">
+							<p>{{ place.price_by_night }}</p>
+						</div>
+					</div>
+					<div class="information">
+						<div class="max_guest">
+							<p>{{ place.max_guest }}</p>
+						</div>
+						<div class="number_rooms">
+							{% if (place.number_rooms == 1 ) %}
+							<p>{{ place.number_rooms }} Room</p>
+							{% else %}
+							<p>{{ place.number_rooms }} Rooms</p>
+							{% endif %}
+						</div>
+						<div class="number_bathrooms">
+							{% if (place.number_bathrooms == 1 ) %}
+							<p>{{ place.number_bathrooms }} Bathroom</p>
+							{% else %}
+							<p>{{ place.number_rooms }} Bathrooms</p>
+							{% endif %}
+						</div>
+					</div>
+					<div class="user">
+						<p><span>Owner: </span>{{ place.user.first_name }} {{ place.user.last_name }}</p>
+					</div>
+					<div class="description">
+						<p>
+							{{ place.description | safe }}
+						</p>
+					</div>
+				</article>
+				{% endfor %}
+			</section>
+		</div>
+		<footer>
+			<p>Holberton School</p>
+		</footer>
+	</body>
+</html>
